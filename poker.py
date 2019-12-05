@@ -1,12 +1,12 @@
 from random import shuffle
 from random import randint as rand
+import math
 import re
 
 class Card:
   def __init__(self, value, suit):
     self.value = value
     self.suit = suit
-
 
   def cardName(self):
     royalCards = {1: "Ace", 11: "Jack", 12: "Queen", 13:"King"}
@@ -16,10 +16,10 @@ class Card:
   def cardReveal(self):
       print(self.cardName())
 
-  def suit(self):
+  def cardSuit(self):
       return self.suit
 
-  def value(self):
+  def cardValue(self):
       return self.value
 
 class Deck:
@@ -28,7 +28,7 @@ class Deck:
         self.cardDeck = [Card(value, suit) for suit in self.suits for value in range(1,14)]
 
     def deckShuffle(self):
-        for i in range(5):
+        for i in range(10):
             shuffle(self.cardDeck)
 
     def drawCard(self):
@@ -50,22 +50,31 @@ class Deck:
         return self.cardHand
 
     def handReveal(self):
-        hand = len(self.cardHand)
-        for i in range(hand):
+        self.tempHand = len(self.cardHand)
+        for i in range(self.tempHand):
             self.cardHand[i].cardReveal()
 
     def setupHand(self, size):
+        self.size = size
         self.deckShuffle()
         self.drawHand(size)
         self.handReveal()
 
     def checkStraight(self):
-        self.handValues = [self.cardHand.suit() for self.cardHand.suit() in self.cardHand]
-        print(self.handValues)
+        self.handValues = []
+        for i in range(self.tempHand):
+            self.handValues.append(self.cardHand[i].cardValue())
+        self.handValues.sort()
+        tempNum = 1
+        for i in self.handValues: tempNum *= i
+        if (math.factorial(self.handValues[-1])/(math.factorial(self.handValues[0]-1))) == tempNum:
+          print("You have a straight!")
+        else:
+          print("You do not have a straight!")
 
 def runGame():
-    playerName = input("Play Poker! Enter Name: \n")
-    print(playerName + ", are you ready to play poker? Your hands is:\n")
+    #playerName = input("Play Poker! Enter Name: \n")
+    #print(playerName + ", are you ready to play poker? Your hands is:\n")
     deck = Deck()
     deck.setupHand(5)
     deck.checkStraight()
@@ -75,7 +84,7 @@ def runGame():
         cardReplace = [int(i) for i in re.split('[ |, |]+', inputCardReplace.strip('[]'))]
         for i in range(len(cardReplace)):
           replacePlacement = cardReplace[i]
-          if replacePlacement in range(1, 5):
+          if replacePlacement in range(1, 6):
             deck.drawExchange(replacePlacement-1)
             cardsExchanged = True
           else:
@@ -91,4 +100,3 @@ def runGame():
    
 if __name__ == "__main__":
     runGame()
-
