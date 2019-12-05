@@ -73,8 +73,8 @@ class Deck:
           print("You do not have a straight!")
 
 def runGame():
-    #playerName = input("Play Poker! Enter Name: \n")
-    #print(playerName + ", are you ready to play poker? Your hands is:\n")
+    playerName = input("Play Poker! Enter Name: \n")
+    print(playerName + ", are you ready to play poker? Your hands is:\n")
     deck = Deck()
     deck.setupHand(5)
     deck.checkStraight()
