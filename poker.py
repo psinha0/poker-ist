@@ -1,5 +1,6 @@
 from random import shuffle
 from random import randint as rand
+from collections import Counter
 import math
 import re
 
@@ -65,19 +66,77 @@ class Deck:
         for i in range(self.tempHand):
             self.handValues.append(self.cardHand[i].cardValue())
         self.handValues.sort()
+        self.highestCard = self.handValues[-1]
+        self.lowestCard = self.handValues[0]
         tempNum = 1
         for i in self.handValues: tempNum *= i
         if (math.factorial(self.handValues[-1])/(math.factorial(self.handValues[0]-1))) == tempNum:
-          print("You have a straight!")
+          return 18
         else:
-          print("You do not have a straight!")
+          return 0
+
+    def checkFlush(self):
+      self.handSuits = []
+      flushCheck = False
+      for i in range(self.tempHand):
+        self.handSuits.append(self.cardHand[i].cardSuit())
+      '''for i in range(self.tempHand-1):
+        if self.handSuits[0] == self.handSuits[i+1]:
+          flushCheck = True
+        else:
+          flushCheck = False
+          break'''
+      if len(set(self.handSuits)) == 1:
+        return 19
+      else:
+        return 0
+
+    def checkStraightFlush(self):
+      if (self.checkStraight() == 18) and (self.checkFlush() == 19):
+        return 22
+
+    def checkOfAKind(self):
+      self.handValues = []
+      for i in range(self.tempHand):
+          self.handValues.append(self.cardHand[i].cardValue())
+      self.handValues.sort()
+      for i in range(6):
+        cardDuplicate = [value for value, count in Counter(self.handValues).items() if count > i]
+        if not cardDuplicate:
+          cardDuplicate = [value for value, count in Counter(self.handValues).items() if count == i]
+          typeOfKind = i
+          break
+      if len(cardDuplicate) == 2:
+        print("You have two pairs!")
+        return 16
+      elif len(cardDuplicate) == 1:
+        if typeOfKind == 3:
+          cardDuplicate = [value for value, count in Counter(self.handValues).items() if count == 2]
+          if cardDuplicate:
+            print("You have a full house!")
+            return 20
+          else:
+            print("You have three of a kind!")
+            return 17
+        if typeOfKind == 4:
+          print("You have four of a kind!")
+          return 21
+        else:
+          print("You have one pair!")
+          return 15
+      else:
+        return 0
+
+    def checkHighestValue(self):
+      if self.lowestCard == 1:
+        self.highestCard = 14
+      return self.highestCard
 
 def runGame():
     playerName = input("Play Poker! Enter Name: \n")
     print(playerName + ", are you ready to play poker? Your hands is:\n")
     deck = Deck()
     deck.setupHand(5)
-    deck.checkStraight()
     while True:
       try:
         inputCardReplace = input("Which card would you like to exchange? (Enter the card position number)\n")
